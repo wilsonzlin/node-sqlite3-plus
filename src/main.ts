@@ -7,7 +7,7 @@ export class Sqlite3Plus {
   constructor(readonly db: sq3.Database) {}
 
   static open = (filename: string) =>
-    new Promise<sq3.Database>((resolve, reject) => {
+    new Promise<Sqlite3Plus>((resolve, reject) => {
       // WARNING: If `mode` argument is provided, it must not be undefined,
       // as otherwise the library will think it's omitted and interpret the `mode`
       // arg as the callback, meaning the actual callback never gets called.
@@ -15,7 +15,7 @@ export class Sqlite3Plus {
         if (err) {
           reject(err);
         } else {
-          resolve(db);
+          resolve(new Sqlite3Plus(db));
         }
       });
     });
@@ -30,7 +30,7 @@ export class Sqlite3Plus {
     });
   });
 
-  all = <R extends {}>(statement: string, params?: any[]) =>
+  query = <R extends {}>(statement: string, params?: any[]) =>
     new Promise<R[]>((resolve, reject) => {
       this.db.all(statement, params, (err, rows) => {
         if (err) {
@@ -42,13 +42,13 @@ export class Sqlite3Plus {
     });
 
   run = (statement: string, params?: any[]) =>
-    new Promise<{ lastID: number; changes: number }>((resolve, reject) => {
+    new Promise<{ lastId: number; changes: number }>((resolve, reject) => {
       this.db.run(statement, params, function (err) {
         if (err) {
           reject(err);
         } else {
           resolve({
-            lastID: this.lastID,
+            lastId: this.lastID,
             changes: this.changes,
           });
         }

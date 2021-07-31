@@ -20,15 +20,16 @@ export class Sqlite3Plus {
       });
     });
 
-  close = new Promise<void>((resolve, reject) => {
-    this.db.close((err) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve();
-      }
+  close = () =>
+    new Promise<void>((resolve, reject) => {
+      this.db.close((err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
     });
-  });
 
   query = <R extends {}>(statement: string, params?: any[]) =>
     new Promise<R[]>((resolve, reject) => {
